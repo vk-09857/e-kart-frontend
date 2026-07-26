@@ -2,6 +2,15 @@ import * as S from "./ProductCard.styles";
 import { useAddToCartMutation } from "../../../cart/hooks/api/useCartMutations";
 import { useCartQuery } from "../../../cart/hooks/api/useCartQuery";
 import { useNavigate } from "react-router-dom";
+import {
+  useWishlistQuery,
+} from "../../../wishlist/api/useWishlistQuery";
+
+import {
+  useAddToWishlistMutation,
+  useRemoveFromWishlistMutation,
+} from "../../../wishlist/api/useWishlistMutations";
+import { Heart } from "lucide-react";
 
 export default function ProductCard({ product }) {
   const navigate = useNavigate();
@@ -21,9 +30,26 @@ export default function ProductCard({ product }) {
   const { data: cartItems = [] } =
     useCartQuery();
 
+  const { data: wishlistItems = [] } =
+    useWishlistQuery();
+
+  const {
+    mutate: addToWishlist,
+  } = useAddToWishlistMutation();
+
+  const {
+    mutate: removeFromWishlist,
+  } = useRemoveFromWishlistMutation();
+
   const isAdded = cartItems.some(
     (item) => item.product_title === title
   );
+
+  const wishlistItem = wishlistItems.find(
+    (item) => item.product_id === id
+  );
+
+  const isWishlisted = !!wishlistItem;
 
   const handleAddToCart = () => {
     if (!isAdded) {
@@ -34,6 +60,22 @@ export default function ProductCard({ product }) {
     }
   };
 
+  const handleWishlist = () => {
+
+    if (isWishlisted) {
+
+      removeFromWishlist(
+        wishlistItem.wishlist_id
+      );
+
+    } else {
+
+      addToWishlist(id);
+
+    }
+
+  };
+
   const handleViewProduct = () => {
     navigate(`/products/${id}`);
   };
@@ -41,13 +83,26 @@ export default function ProductCard({ product }) {
   const imageUrl = image?.startsWith("http")
     ? image
     : `${import.meta.env.VITE_API_URL}${image}`;
-console.log(product);
+  console.log(product);
   return (
     <S.Card>
       <S.ImageWrapper
         onClick={handleViewProduct}
         style={{ cursor: "pointer" }}
       >
+        <S.WishlistButton
+          onClick={(e) => {
+            e.stopPropagation();
+            handleWishlist();
+          }}
+        >
+          <Heart
+            size={20}
+            fill={isWishlisted ? "#e60000" : "none"}
+            color={isWishlisted ? "#e60000" : "#ffffff"}
+          />
+        </S.WishlistButton>
+
         {image ? (
           <img
             src={imageUrl}
@@ -89,18 +144,18 @@ console.log(product);
             style={
               isAdded
                 ? {
-                    backgroundColor:
-                      "var(--color-success)",
-                    cursor: "default",
-                  }
+                  backgroundColor:
+                    "var(--color-success)",
+                  cursor: "default",
+                }
                 : {}
             }
           >
             {isPending
               ? "Adding..."
               : isAdded
-              ? "Added"
-              : "Add to Cart"}
+                ? "Added"
+                : "Add to Cart"}
           </S.Button>
         </S.Footer>
       </S.Content>

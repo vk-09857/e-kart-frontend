@@ -1,5 +1,5 @@
 import * as S from "./ProductsPage.styles";
-import { useProducts } from "../../hooks/ui/useProducts";
+import { useProducts } from "../../hooks/useProducts";
 import ProductCard, { ProductSkeleton } from "../../components/ProductCard";
 import CategoryChips from "../../components/CategoryChips";
 

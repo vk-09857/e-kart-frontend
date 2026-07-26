@@ -81,6 +81,44 @@ export const ImageWrapper = styled.div`
   }
 `;
 
+export const WishlistButton = styled.button`
+  position: absolute;
+  top: 12px;
+  right: 12px;
+
+  width: 42px;
+  height: 42px;
+
+  border: none;
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(20, 20, 25, 0.75);
+  backdrop-filter: blur(12px);
+
+  cursor: pointer;
+
+  z-index: 5;
+
+  transition: all 0.25s ease;
+
+  &:hover {
+    transform: scale(1.08);
+    background: rgba(35, 35, 40, 0.9);
+  }
+
+  svg {
+    transition: all 0.25s ease;
+  }
+
+  &:hover svg {
+    transform: scale(1.1);
+  }
+`;
+
 export const Content = styled.div`
   padding: var(--spacing-lg);
   display: flex;

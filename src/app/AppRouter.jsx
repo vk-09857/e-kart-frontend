@@ -13,6 +13,7 @@ import OrdersPage from "../modules/orders/pages/OrdersPage";
 
 import AddressPage from "../modules/address/pages/AddressPage";
 import PaymentPage from "../modules/payment/pages/PaymentPage";
+import WishlistPage from "../modules/wishlist/pages/WishlistPage";
 
 export default function AppRouter() {
   const token = localStorage.getItem("access_token");
@@ -49,6 +50,12 @@ export default function AppRouter() {
       <Route path="/payment" element={<PaymentPage />} />
 
       <Route path="*" element={<NotFoundPage />} />
+
+      <Route
+        path="/wishlist"
+        element={<WishlistPage />}
+      />
+
     </Routes>
   );
 }

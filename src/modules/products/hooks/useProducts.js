@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
-import { useProductsQuery } from "../api/useProductsQuery";
+import { useProductsQuery } from "./api/useProductsQuery";
 
 export const useProducts = (initialLimit = 10) => {
   const [page, setPage] = useState(1);
