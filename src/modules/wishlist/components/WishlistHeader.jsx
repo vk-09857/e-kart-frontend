@@ -1,8 +1,10 @@
 import * as S from "../styles/WishlistHeader.styles";
 import ClearWishlistButton from "./ClearWishlistButton";
+import { Heart } from "lucide-react";
 
 export default function WishlistHeader({
-    totalItems,
+    totalItems = 0,
+    onClearClick,
 }) {
     return (
         <S.Container>
@@ -17,7 +19,9 @@ export default function WishlistHeader({
 
                         <S.Title>
                             MY WISHLIST
-                            <span>♡</span>
+                            <span>
+                                <Heart size={32} fill="#e60000" color="#e60000" style={{ display: 'inline-block', verticalAlign: 'middle' }} />
+                            </span>
                         </S.Title>
 
                         <S.Subtitle>
@@ -34,7 +38,9 @@ export default function WishlistHeader({
 
             </S.Left>
 
-            <ClearWishlistButton />
+            {totalItems > 0 && (
+                <ClearWishlistButton onClick={onClearClick} />
+            )}
 
         </S.Container>
     );

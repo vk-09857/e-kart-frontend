@@ -20,3 +20,15 @@ export const removeFromWishlist = async (wishlistId) => {
         method: "DELETE",
     });
 };
+
+export const removeFromWishlistByProductId = async (productId) => {
+    return await apiClient(`/wishlist/product/${productId}`, {
+        method: "DELETE",
+    });
+};
+
+export const clearWishlist = async () => {
+    return await apiClient("/wishlist", {
+        method: "DELETE",
+    });
+};

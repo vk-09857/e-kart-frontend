@@ -1,9 +1,15 @@
 import * as S from "../styles/WishlistEmpty.styles";
+import { useNavigate } from "react-router-dom";
+import { ShoppingBag, ChevronRight } from "lucide-react";
 
 export default function WishlistEmpty() {
+    const navigate = useNavigate();
+
     return (
         <S.Container>
-            <S.Icon>♡</S.Icon>
+            <S.IconWrapper>
+                <ShoppingBag size={32} color="#e60000" />
+            </S.IconWrapper>
 
             <S.Title>
                 Love a gadget?
@@ -13,8 +19,8 @@ export default function WishlistEmpty() {
                 Add items to your wishlist and shop them later.
             </S.Subtitle>
 
-            <S.Button>
-                Explore Products
+            <S.Button onClick={() => navigate("/products")}>
+                EXPLORE PRODUCTS <ChevronRight size={18} />
             </S.Button>
         </S.Container>
     );

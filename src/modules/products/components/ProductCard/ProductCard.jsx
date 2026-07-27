@@ -1,15 +1,8 @@
 import * as S from "./ProductCard.styles";
+import { useNavigate } from "react-router-dom";
 import { useAddToCartMutation } from "../../../cart/hooks/api/useCartMutations";
 import { useCartQuery } from "../../../cart/hooks/api/useCartQuery";
-import { useNavigate } from "react-router-dom";
-import {
-  useWishlistQuery,
-} from "../../../wishlist/api/useWishlistQuery";
-
-import {
-  useAddToWishlistMutation,
-  useRemoveFromWishlistMutation,
-} from "../../../wishlist/api/useWishlistMutations";
+import { useWishlist } from "../../../wishlist/hooks/useWishlist";
 import { Heart } from "lucide-react";
 
 export default function ProductCard({ product }) {
@@ -24,32 +17,16 @@ export default function ProductCard({ product }) {
     image,
   } = product;
 
-  const { mutate: addToCart, isPending } =
-    useAddToCartMutation();
-
-  const { data: cartItems = [] } =
-    useCartQuery();
-
-  const { data: wishlistItems = [] } =
-    useWishlistQuery();
-
-  const {
-    mutate: addToWishlist,
-  } = useAddToWishlistMutation();
-
-  const {
-    mutate: removeFromWishlist,
-  } = useRemoveFromWishlistMutation();
+  const { mutate: addToCart, isPending } = useAddToCartMutation();
+  const { data: cartItems = [] } = useCartQuery();
+  const { isWishlisted, getWishlistId, addToWishlist, removeFromWishlist } = useWishlist();
 
   const isAdded = cartItems.some(
     (item) => item.product_title === title
   );
 
-  const wishlistItem = wishlistItems.find(
-    (item) => item.product_id === id
-  );
-
-  const isWishlisted = !!wishlistItem;
+  const activeWishlisted = isWishlisted(id);
+  const wishlistId = getWishlistId(id);
 
   const handleAddToCart = () => {
     if (!isAdded) {
@@ -61,19 +38,11 @@ export default function ProductCard({ product }) {
   };
 
   const handleWishlist = () => {
-
-    if (isWishlisted) {
-
-      removeFromWishlist(
-        wishlistItem.wishlist_id
-      );
-
+    if (activeWishlisted && wishlistId) {
+      removeFromWishlist(wishlistId);
     } else {
-
       addToWishlist(id);
-
     }
-
   };
 
   const handleViewProduct = () => {
@@ -98,8 +67,8 @@ export default function ProductCard({ product }) {
         >
           <Heart
             size={20}
-            fill={isWishlisted ? "#e60000" : "none"}
-            color={isWishlisted ? "#e60000" : "#ffffff"}
+            fill={activeWishlisted ? "#e60000" : "none"}
+            color={activeWishlisted ? "#e60000" : "#ffffff"}
           />
         </S.WishlistButton>
 

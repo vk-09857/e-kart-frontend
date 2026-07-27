@@ -202,3 +202,25 @@ export const BuyNowButton = styled.button`
   }
 `;
 
+export const WishlistButton = styled.button`
+  padding: 16px 24px;
+  border-radius: 14px;
+  border: 1px solid ${(props) => (props.$isWishlisted ? "var(--color-primary)" : "rgba(255, 255, 255, 0.15)")};
+  background: ${(props) => (props.$isWishlisted ? "rgba(230, 0, 0, 0.15)" : "rgba(255, 255, 255, 0.04)")};
+  color: ${(props) => (props.$isWishlisted ? "#e60000" : "white")};
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-3px);
+    border-color: var(--color-primary);
+    color: #e60000;
+  }
+`;
+
+

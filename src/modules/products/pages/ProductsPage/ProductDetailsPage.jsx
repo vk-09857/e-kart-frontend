@@ -8,13 +8,29 @@ import {
   ShieldCheck,
   RefreshCw,
   Award,
+  Heart,
 } from "lucide-react";
 import { useAddToCartMutation } from "../../../cart/hooks/api/useCartMutations";
+import { useWishlist } from "../../../wishlist/hooks/useWishlist";
 
 export default function ProductDetailsPage() {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  const { isWishlisted, getWishlistId, addToWishlist, removeFromWishlist } = useWishlist();
+
+  const productId = product?.id || Number(id);
+  const activeWishlisted = isWishlisted(productId);
+  const wishlistId = getWishlistId(productId);
+
+  const handleWishlistToggle = () => {
+    if (activeWishlisted && wishlistId) {
+      removeFromWishlist(wishlistId);
+    } else {
+      addToWishlist(productId);
+    }
+  };
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -153,6 +169,19 @@ export default function ProductDetailsPage() {
             >
               Add To Cart
             </S.AddToCartButton>
+
+            <S.WishlistButton
+              $isWishlisted={activeWishlisted}
+              onClick={handleWishlistToggle}
+              aria-label={activeWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+            >
+              <Heart
+                size={20}
+                fill={activeWishlisted ? "#e60000" : "none"}
+                color={activeWishlisted ? "#e60000" : "currentColor"}
+              />
+              {activeWishlisted ? "Wishlisted" : "Wishlist"}
+            </S.WishlistButton>
             
             <S.BuyNowButton
               onClick={handlePayment}
@@ -165,3 +194,4 @@ export default function ProductDetailsPage() {
     </S.PageWrapper>
   );
 }
+

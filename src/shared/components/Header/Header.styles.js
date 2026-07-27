@@ -249,3 +249,44 @@ export const Actions = styled.div`
     }
   }
 `;
+
+export const IconButton = styled.button`
+  position: relative;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+
+  &:hover, &.active {
+    background: rgba(230, 0, 0, 0.15);
+    border-color: rgba(230, 0, 0, 0.35);
+    color: #e60000;
+  }
+`;
+
+export const Badge = styled.span`
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: #e60000;
+  color: white;
+  font-size: 11px;
+  font-weight: 800;
+  height: 18px;
+  min-width: 18px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  border: 2px solid #0a0a0f;
+`;
+

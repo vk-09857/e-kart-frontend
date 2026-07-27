@@ -79,6 +79,10 @@ export const apiClient = async (
       result.detail?.success === false;
 
     if (isError) {
+      if (response.status === 401) {
+        localStorage.removeItem("access_token");
+      }
+
       let errorMessage =
         "An unexpected error occurred";
 

@@ -33,15 +33,16 @@ export const Card = styled.div`
   }
 
   @media(max-width:1200px){
-      grid-template-columns:180px 1fr;
+      grid-template-columns: 180px 1fr;
+      gap: 24px;
   }
 
   @media(max-width:768px){
-      display:flex;
-      flex-direction:column;
-      align-items:flex-start;
-
-      padding:20px;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 20px;
+      padding: 20px;
   }
 `;
 
