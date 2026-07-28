@@ -4,6 +4,7 @@ import { useAddToCartMutation } from "../../../cart/hooks/api/useCartMutations";
 import { useCartQuery } from "../../../cart/hooks/api/useCartQuery";
 import { useWishlist } from "../../../wishlist/hooks/useWishlist";
 import { getImageUrl } from "../../../../lib/apiClient";
+import { Heart } from "lucide-react";
 
 export default function ProductCard({ product }) {
   const navigate = useNavigate();
