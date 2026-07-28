@@ -10,6 +10,7 @@ import ProductsPage from "../modules/products/pages/ProductsPage";
 import ProductDetailsPage from "../modules/products/pages/ProductsPage/ProductDetailsPage";
 
 import OrdersPage from "../modules/orders/pages/OrdersPage";
+import TrackOrderPage from "../modules/orders/pages/TrackOrderPage/TrackOrderPage";
 
 import AddressPage from "../modules/address/pages/AddressPage";
 import PaymentPage from "../modules/payment/pages/PaymentPage";
@@ -44,6 +45,9 @@ export default function AppRouter() {
       />
 
       <Route path="/orders" element={<OrdersPage />} />
+      <Route path="/orders/:id" element={<TrackOrderPage />} />
+      <Route path="/orders/:id/track" element={<TrackOrderPage />} />
+      <Route path="/track-order/:id" element={<TrackOrderPage />} />
 
       <Route path="/address" element={<AddressPage />} />
 
