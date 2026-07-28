@@ -6,6 +6,7 @@ import * as S from "../../styles/OrdersPage.styles";
 import OrderCard from "../../components/OrderCard";
 
 import { getLiveISTOrders, formatISTDateString } from "../../../../shared/utils/dateUtils";
+import { API_BASE_URL } from "../../../../lib/apiClient";
 
 export default function OrdersPage() {
   const [activeFilter, setActiveFilter] = useState("ALL ORDERS");
@@ -29,8 +30,7 @@ export default function OrdersPage() {
 
       try {
         setIsLoading(true);
-        const baseUrl = import.meta.env.VITE_API_URL || "https://e-kart-backend-qyf8.onrender.com";
-        const response = await axios.get(`${baseUrl}/orders`, {
+        const response = await axios.get(`${API_BASE_URL}/orders`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 

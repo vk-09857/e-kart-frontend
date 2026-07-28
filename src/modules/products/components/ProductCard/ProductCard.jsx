@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAddToCartMutation } from "../../../cart/hooks/api/useCartMutations";
 import { useCartQuery } from "../../../cart/hooks/api/useCartQuery";
 import { useWishlist } from "../../../wishlist/hooks/useWishlist";
-import { Heart } from "lucide-react";
+import { getImageUrl } from "../../../../lib/apiClient";
 
 export default function ProductCard({ product }) {
   const navigate = useNavigate();
@@ -49,9 +49,7 @@ export default function ProductCard({ product }) {
     navigate(`/products/${id}`);
   };
 
-  const imageUrl = image?.startsWith("http")
-    ? image
-    : `${import.meta.env.VITE_API_URL}${image}`;
+  const imageUrl = getImageUrl(image);
   console.log(product);
   return (
     <S.Card>

@@ -18,6 +18,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import * as S from "../styles/PaymentPage.styles";
 import { useCartQuery } from "../../cart/hooks/api/useCartQuery";
 import { CART_QUERY_KEY } from "../../cart/hooks/api/useCartQuery";
+import { API_BASE_URL } from "../../../lib/apiClient";
 
 export default function PaymentPage() {
   const navigate = useNavigate();
@@ -44,7 +45,7 @@ export default function PaymentPage() {
     const token = localStorage.getItem("access_token");
     if (token) {
       axios
-        .get(`${import.meta.env.VITE_API_URL || "https://e-kart-backend-qyf8.onrender.com"}/address`, {
+        .get(`${API_BASE_URL}/address`, {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((res) => {
@@ -136,10 +137,9 @@ export default function PaymentPage() {
 
   const clearCartStateAndCache = async () => {
     const token = localStorage.getItem("access_token");
-    const baseUrl = import.meta.env.VITE_API_URL || "https://e-kart-backend-qyf8.onrender.com";
     if (token) {
       try {
-        await axios.delete(`${baseUrl}/cart/clear`, {
+        await axios.delete(`${API_BASE_URL}/cart/clear`, {
           headers: { Authorization: `Bearer ${token}` },
         });
       } catch (e) {
@@ -156,13 +156,12 @@ export default function PaymentPage() {
     setIsProcessing(true);
 
     const token = localStorage.getItem("access_token");
-    const baseUrl = import.meta.env.VITE_API_URL || "https://e-kart-backend-qyf8.onrender.com";
 
     // If online razorpay payment
     if (selectedMethod === "online" && window.Razorpay && import.meta.env.VITE_RAZORPAY_KEY_ID) {
       try {
         const response = await axios.post(
-          `${baseUrl}/create-payment-order`,
+          `${API_BASE_URL}/create-payment-order`,
           { amount: subtotal },
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -179,7 +178,7 @@ export default function PaymentPage() {
             let checkoutRes = null;
             try {
               try {
-                await axios.post(`${baseUrl}/verify-payment`, null, {
+                await axios.post(`${API_BASE_URL}/verify-payment`, null, {
                   params: {
                     razorpay_order_id: paymentResponse.razorpay_order_id,
                     razorpay_payment_id: paymentResponse.razorpay_payment_id,
@@ -191,7 +190,7 @@ export default function PaymentPage() {
               }
 
               checkoutRes = await axios.post(
-                `${baseUrl}/checkout`,
+                `${API_BASE_URL}/checkout`,
                 {},
                 { headers: { Authorization: `Bearer ${token}` } }
               );
@@ -204,7 +203,7 @@ export default function PaymentPage() {
               console.error("Payment handler fallback checkout:", err);
               try {
                 checkoutRes = await axios.post(
-                  `${baseUrl}/checkout`,
+                  `${API_BASE_URL}/checkout`,
                   {},
                   { headers: { Authorization: `Bearer ${token}` } }
                 );
@@ -235,7 +234,7 @@ export default function PaymentPage() {
       let checkoutRes = null;
       if (token) {
         checkoutRes = await axios.post(
-          `${baseUrl}/checkout`,
+          `${API_BASE_URL}/checkout`,
           {},
           { headers: { Authorization: `Bearer ${token}` } }
         );

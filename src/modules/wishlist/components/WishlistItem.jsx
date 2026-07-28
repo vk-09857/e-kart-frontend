@@ -4,13 +4,10 @@ import {
     Trash2,
     ChevronRight,
 } from "lucide-react";
+import { getImageUrl } from "../../../lib/apiClient";
 
 export default function WishlistItem({ item, onMoveToCart, onRemove }) {
-    const imageUrl = item.image?.startsWith("http")
-        ? item.image
-        : item.image
-        ? `${import.meta.env.VITE_API_URL}${item.image}`
-        : "";
+    const imageUrl = getImageUrl(item.image);
 
     return (
         <S.Card>

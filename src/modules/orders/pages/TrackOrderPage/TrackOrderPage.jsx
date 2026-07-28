@@ -16,6 +16,7 @@ import axios from "axios";
 import * as S from "../../styles/TrackOrderPage.styles";
 import StatusBadge from "../../components/StatusBadge";
 import { calculateLiveTrackingTimeline, formatISTDateString, getLiveISTOrders } from "../../../../shared/utils/dateUtils";
+import { API_BASE_URL } from "../../../../lib/apiClient";
 
 export default function TrackOrderPage() {
   const { id } = useParams();
@@ -68,8 +69,7 @@ export default function TrackOrderPage() {
       const token = localStorage.getItem("access_token");
       if (!token) return;
       try {
-        const baseUrl = import.meta.env.VITE_API_URL || "https://e-kart-backend-qyf8.onrender.com";
-        const response = await axios.get(`${baseUrl}/orders`, {
+        const response = await axios.get(`${API_BASE_URL}/orders`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 

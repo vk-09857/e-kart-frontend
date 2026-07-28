@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { apiClient } from "../../../../lib/apiClient";
+import { apiClient, API_BASE_URL, getImageUrl } from "../../../../lib/apiClient";
 import axios from "axios";
 import * as S from "./ProductDetailsPage.styles";
 import {
@@ -84,7 +84,7 @@ export default function ProductDetailsPage() {
   const handlePayment = async () => {
     try {
     const response = await axios.post(
-      `${import.meta.env.VITE_API_URL}/create-order`,
+      `${API_BASE_URL}/create-order`,
       {
         amount: product.price,
       }
@@ -125,9 +125,7 @@ export default function ProductDetailsPage() {
 
   if (!product) return <h2>Product Not Found</h2>;
 
-  const imageUrl = product.image?.startsWith("http")
-    ? product.image
-    : `${import.meta.env.VITE_API_URL}${product.image}`;
+  const imageUrl = getImageUrl(product.image);
 
   return (
     <S.PageWrapper>

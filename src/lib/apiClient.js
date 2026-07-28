@@ -1,13 +1,25 @@
-const BASE_URL =
-  import.meta.env.VITE_API_URL ||
-  "https://e-kart-backend-qyf8.onrender.com";
-console.log("BASE_URL:", BASE_URL);
+export const API_BASE_URL = (
+  import.meta.env.VITE_API_URL && import.meta.env.VITE_API_URL.trim() !== ""
+    ? import.meta.env.VITE_API_URL
+    : "https://e-kart-backend-qyf8.onrender.com"
+).replace(/\/+$/, "");
+
+export const getImageUrl = (imagePath) => {
+  if (!imagePath) return "";
+  if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
+    return imagePath;
+  }
+  const cleanPath = imagePath.startsWith("/") ? imagePath : `/${imagePath}`;
+  return `${API_BASE_URL}${cleanPath}`;
+};
+
+console.log("BASE_URL:", API_BASE_URL);
 
 export const apiClient = async (
   endpoint,
   options = {}
 ) => {
-  const url = `${BASE_URL}${
+  const url = `${API_BASE_URL}${
     endpoint.startsWith("/")
       ? endpoint
       : `/${endpoint}`
