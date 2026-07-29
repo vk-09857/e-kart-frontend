@@ -44,7 +44,7 @@ export default function Header() {
           </S.Logo>
 
           <S.DesktopNavMenu>
-            <NavLink to="/products" className={({ isActive }) => isActive ? "active" : ""}>Products</NavLink>
+            <NavLink to="/products" className={({ isActive }) => (isActive || location.pathname.startsWith("/products")) ? "active" : ""}>Products</NavLink>
             <NavLink to="/orders" className={({ isActive }) => isActive ? "active" : ""}>Orders</NavLink>
             <NavLink to="/wishlist" className={({ isActive }) => isActive ? "active" : ""}>Wishlist</NavLink>
             <a href="#" onClick={(e) => { e.preventDefault(); toggleDrawer(); }}>
