@@ -275,3 +275,18 @@ export const LinkText = styled.p`
     }
   }
 `;
+
+export const ForgotPasswordLink = styled(Link)`
+  display: block;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5);
+  text-decoration: none;
+  margin-top: 8px;
+  text-align: right;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: var(--color-primary);
+  }
+`;
+

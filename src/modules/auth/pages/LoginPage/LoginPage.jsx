@@ -50,7 +50,11 @@ export default function LoginPage() {
                     {errors.password && (
                       <S.ErrorMessage>{errors.password.message}</S.ErrorMessage>
                     )}
+                    <S.ForgotPasswordLink to="/forgot-password">
+                      Forgot Password?
+                    </S.ForgotPasswordLink>
                   </S.FormGroup>
+
 
                   <S.Button type="submit" disabled={isPending}>
                     {isPending ? "Connecting..." : "Continue"}

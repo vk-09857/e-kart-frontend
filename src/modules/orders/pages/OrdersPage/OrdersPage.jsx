@@ -11,7 +11,8 @@ import { API_BASE_URL, getImageUrl } from "../../../../lib/apiClient";
 export default function OrdersPage() {
   const [activeFilter, setActiveFilter] = useState("ALL ORDERS");
   const [sortBy, setSortBy] = useState("NEWEST");
-  const [orders, setOrders] = useState(() => getLiveISTOrders());
+  const [orders, setOrders] = useState([]);
+
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -64,7 +65,7 @@ export default function OrdersPage() {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        if (Array.isArray(response.data) && response.data.length > 0) {
+        if (Array.isArray(response.data)) {
           const formatted = response.data.map((item) => {
             const firstProduct = item.products?.[0] || {};
             const title = firstProduct.product_title || "ONEPLUS NORD 2";
@@ -99,30 +100,13 @@ export default function OrdersPage() {
           }
           setOrders(allList);
         } else {
-          const defaultsWithLiveImages = getLiveISTOrders().map((def) => ({
-            ...def,
-            image: getLatestProdImage(def.product_id, def.product_title, def.image),
-          }));
-          if (lastPlaced) {
-            lastPlaced.image = getLatestProdImage(lastPlaced.product_id, lastPlaced.product_title, lastPlaced.image);
-            setOrders([lastPlaced, ...defaultsWithLiveImages]);
-          } else {
-            setOrders(defaultsWithLiveImages);
-          }
+          setOrders([]);
         }
       } catch (err) {
         console.error("Error fetching orders:", err);
-        const defaultsWithLiveImages = getLiveISTOrders().map((def) => ({
-          ...def,
-          image: getLatestProdImage(def.product_id, def.product_title, def.image),
-        }));
-        if (lastPlaced) {
-          lastPlaced.image = getLatestProdImage(lastPlaced.product_id, lastPlaced.product_title, lastPlaced.image);
-          setOrders([lastPlaced, ...defaultsWithLiveImages]);
-        } else {
-          setOrders(defaultsWithLiveImages);
-        }
+        setOrders([]);
       } finally {
+
         setIsLoading(false);
       }
     };

@@ -20,3 +20,17 @@ export const login = async (payload) => {
     body: params,
   });
 };
+
+export const forgotPassword = async (email) => {
+  return await api("/auth/forgot-password", {
+    method: "POST",
+    body: { email },
+  });
+};
+
+export const resetPassword = async (token, newPassword) => {
+  return await api("/auth/reset-password", {
+    method: "POST",
+    body: { token, new_password: newPassword },
+  });
+};

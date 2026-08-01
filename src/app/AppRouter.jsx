@@ -5,6 +5,9 @@ import HomePage from "./pages/Home";
 
 import LoginPage from "../modules/auth/pages/LoginPage";
 import RegisterPage from "../modules/auth/pages/RegisterPage";
+import ForgotPasswordPage from "../modules/auth/pages/ForgotPasswordPage";
+import ResetPasswordPage from "../modules/auth/pages/ResetPasswordPage";
+
 
 import ProductsPage from "../modules/products/pages/ProductsPage";
 import ProductDetailsPage from "../modules/products/pages/ProductsPage/ProductDetailsPage";
@@ -36,6 +39,9 @@ export default function AppRouter() {
 
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
+      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+      <Route path="/reset-password" element={<ResetPasswordPage />} />
+
 
       <Route path="/products" element={<ProductsPage />} />
 
