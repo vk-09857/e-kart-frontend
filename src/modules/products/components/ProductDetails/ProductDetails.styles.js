@@ -6,6 +6,10 @@ export const PageWrapper = styled.div`
   color: #ffffff;
   padding: 40px 24px 60px 24px;
   font-family: inherit;
+
+  @media (max-width: 640px) {
+    padding: 20px 16px 40px 16px;
+  }
 `;
 
 export const Container = styled.div`
@@ -65,7 +69,12 @@ export const MainImageCard = styled.div`
   }
 
   @media (max-width: 768px) {
-    height: 380px;
+    height: 360px;
+  }
+
+  @media (max-width: 480px) {
+    height: 280px;
+    padding: 16px;
   }
 `;
 

@@ -27,6 +27,10 @@ export const ModalBox = styled.div`
   flex-direction: column;
   align-items: center;
   text-align: center;
+
+  @media (max-width: 480px) {
+    padding: 20px 16px;
+  }
 `;
 
 export const IconContainer = styled.div`

@@ -61,6 +61,10 @@ export const Container = styled.div`
   margin: 0 auto;
   padding: 0 24px;
 
+  @media (max-width: 640px) {
+    padding: 0 16px;
+  }
+
   @media (min-width: 1200px) {
     padding: 0 32px;
   }
@@ -244,17 +248,20 @@ export const TimelineStepItem = styled.div`
 `;
 
 export const StepConnectorLine = styled.div`
-  display: none;
+  display: block;
+  position: absolute;
+  top: 48px;
+  left: 23px;
+  width: 2px;
+  height: calc(100% + 32px);
+  background-color: ${props => props.isCompleted ? '#22C55E' : 'rgba(255, 255, 255, 0.1)'};
+  z-index: 0;
 
   @media (min-width: 900px) {
-    display: block;
-    position: absolute;
     top: 24px;
     left: 50%;
     width: 100%;
     height: 2px;
-    background-color: ${props => props.isCompleted ? '#22C55E' : 'rgba(255, 255, 255, 0.1)'};
-    z-index: 0;
   }
 `;
 

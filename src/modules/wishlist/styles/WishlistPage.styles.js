@@ -5,6 +5,14 @@ export const Page = styled.div`
   max-width: 1450px;
   margin: auto;
   padding: 40px 60px;
+
+  @media (max-width: 1024px) {
+    padding: 32px 32px;
+  }
+
+  @media (max-width: 640px) {
+    padding: 20px 16px;
+  }
 `;
 
 export const Header = styled.div`

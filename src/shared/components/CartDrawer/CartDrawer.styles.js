@@ -35,6 +35,11 @@ export const Drawer = styled.div`
   transform: ${(props) => (props.$isOpen ? "translateX(0)" : "translateX(100%)")};
   transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1);
 
+  @media (max-width: 640px) {
+    max-width: 100%;
+    width: 100%;
+  }
+
   &::before {
     content: "";
     position: absolute;

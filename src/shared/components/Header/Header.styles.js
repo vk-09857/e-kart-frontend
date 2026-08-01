@@ -193,6 +193,10 @@ export const Actions = styled.div`
   justify-content: flex-end;
   order: 3;
 
+  @media (max-width: 480px) {
+    gap: var(--spacing-xs);
+  }
+
   @media (min-width: 768px) {
     max-width: 500px;
   }
@@ -264,6 +268,17 @@ export const IconButton = styled.button`
   cursor: pointer;
   transition: all 0.2s ease;
   flex-shrink: 0;
+
+  @media (max-width: 480px) {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+
+    svg {
+      width: 17px;
+      height: 17px;
+    }
+  }
 
   &:hover, &.active {
     background: rgba(230, 0, 0, 0.15);

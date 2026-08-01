@@ -19,6 +19,11 @@ export const SearchInput = styled.input`
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
 
+  @media (max-width: 480px) {
+    padding: 8px 12px 8px 34px;
+    font-size: 12px;
+  }
+
   &::placeholder {
     color: rgba(255, 255, 255, 0.3);
   }

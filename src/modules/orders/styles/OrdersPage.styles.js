@@ -55,6 +55,10 @@ export const Container = styled.div`
   margin: 0 auto;
   padding: 0 24px;
 
+  @media (max-width: 640px) {
+    padding: 0 16px;
+  }
+
   @media (min-width: 1200px) {
     padding: 0 32px;
   }

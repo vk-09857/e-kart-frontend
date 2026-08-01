@@ -79,6 +79,10 @@ export const ContentBand = styled.div`
   background-color: #0a0a0f;
   position: relative;
 
+  @media (max-width: 480px) {
+    padding: var(--spacing-2xl) var(--spacing-md);
+  }
+
   &::before {
     content: "";
     position: absolute;
