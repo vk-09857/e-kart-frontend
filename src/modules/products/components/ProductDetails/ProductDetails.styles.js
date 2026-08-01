@@ -99,6 +99,11 @@ export const ArrowButton = styled.button`
   flex-shrink: 0;
   transition: all 250ms ease;
 
+  @media (max-width: 480px) {
+    width: 32px;
+    height: 32px;
+  }
+
   &:hover:not(:disabled) {
     background-color: #1d2025;
     color: #ffffff;
@@ -119,6 +124,11 @@ export const ThumbnailList = styled.div`
   overflow-x: auto;
   scroll-behavior: smooth;
   padding: 4px 0;
+
+  @media (max-width: 480px) {
+    gap: 8px;
+  }
+
   &::-webkit-scrollbar {
     display: none;
   }
@@ -145,6 +155,13 @@ export const ThumbnailCard = styled.button`
   align-items: center;
   justify-content: center;
   transition: all 250ms ease;
+
+  @media (max-width: 480px) {
+    width: 56px;
+    height: 56px;
+    border-radius: 10px;
+    padding: 4px;
+  }
 
   &:hover {
     transform: translateY(-2px);
@@ -176,6 +193,13 @@ export const InfoCard = styled.div`
 
   @media (max-width: 768px) {
     padding: 24px;
+    gap: 20px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 18px 16px;
+    gap: 16px;
+    border-radius: 16px;
   }
 `;
 
@@ -204,6 +228,10 @@ export const Title = styled.h1`
 
   @media (max-width: 768px) {
     font-size: 32px;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 24px;
   }
 `;
 
@@ -237,6 +265,14 @@ export const PriceRow = styled.div`
     font-weight: 900;
     line-height: 1;
     letter-spacing: -0.5px;
+
+    @media (max-width: 768px) {
+      font-size: 34px;
+    }
+
+    @media (max-width: 480px) {
+      font-size: 28px;
+    }
   }
 
   .sub-desc {
@@ -274,6 +310,10 @@ export const DescriptionText = styled.p`
   font-size: 15px;
   line-height: 1.6;
   margin: 0;
+
+  @media (max-width: 480px) {
+    font-size: 14px;
+  }
 `;
 
 export const Divider = styled.div`
@@ -290,6 +330,7 @@ export const FeatureGridWrapper = styled.div`
 
   @media (max-width: 640px) {
     grid-template-columns: 1fr;
+    gap: 12px;
   }
 `;
 
@@ -302,6 +343,11 @@ export const FeatureCardContainer = styled.div`
   align-items: flex-start;
   gap: 14px;
   transition: transform 250ms ease, border-color 250ms ease;
+
+  @media (max-width: 480px) {
+    padding: 14px;
+    gap: 10px;
+  }
 
   &:hover {
     transform: translateY(-3px);
@@ -338,6 +384,10 @@ export const ControlsSection = styled.div`
   display: flex;
   flex-direction: column;
   gap: 20px;
+
+  @media (max-width: 480px) {
+    gap: 16px;
+  }
 `;
 
 export const QuantityWrapper = styled.div`
@@ -402,11 +452,13 @@ export const ButtonsRow = styled.div`
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
+    gap: 10px;
   }
 `;
 
 export const BaseButton = styled.button`
   height: 56px;
+  width: 100%;
   border-radius: 14px;
   font-size: 14px;
   font-weight: 800;
@@ -418,6 +470,11 @@ export const BaseButton = styled.button`
   gap: 8px;
   cursor: pointer;
   transition: transform 250ms ease, box-shadow 250ms ease, background-color 250ms ease, border-color 250ms ease;
+
+  @media (max-width: 480px) {
+    height: 48px;
+    font-size: 13px;
+  }
 
   &:hover {
     transform: translateY(-3px);
