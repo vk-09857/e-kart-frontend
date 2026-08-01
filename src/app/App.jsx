@@ -5,6 +5,7 @@ import CartDrawer from "../shared/components/CartDrawer";
 import { Global } from "@emotion/react";
 import { globalCss } from "./GlobalStyles.styles";
 import Footer from "../shared/components/Footer/Footer";
+import ScrollToTop from "../shared/components/ScrollToTop/ScrollToTop";
 
 import { useLocation } from "react-router-dom";
 
@@ -13,11 +14,13 @@ function AppContent() {
 
   const hideFooter =
     location.pathname === "/login" ||
-    location.pathname === "/signup";
+    location.pathname === "/signup" ||
+    location.pathname === "/register";
 
   return (
     <>
       <Global styles={globalCss} />
+      <ScrollToTop />
       <Header />
       <AppRouter />
       {!hideFooter && <Footer />}

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ChevronRight, RotateCcw, Truck, XCircle } from "lucide-react";
 import StatusBadge from "./StatusBadge";
 import * as S from "../styles/OrdersPage.styles";
+import { getImageUrl } from "../../../lib/apiClient";
 
 export default function OrderCard({ order, onActionClick }) {
   const navigate = useNavigate();
@@ -72,7 +73,7 @@ export default function OrderCard({ order, onActionClick }) {
         {/* Column 2: Product info */}
         <S.ProductColumn>
           <S.ProductImage
-            src={order.image || "https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=300&q=80"}
+            src={getImageUrl(order.image) || "https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=300&q=80"}
             alt={order.product_title || "Product"}
             onError={(e) => {
               e.target.src = "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=200&q=80";

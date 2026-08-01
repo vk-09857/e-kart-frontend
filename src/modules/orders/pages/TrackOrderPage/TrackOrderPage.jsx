@@ -16,7 +16,7 @@ import axios from "axios";
 import * as S from "../../styles/TrackOrderPage.styles";
 import StatusBadge from "../../components/StatusBadge";
 import { calculateLiveTrackingTimeline, formatISTDateString, getLiveISTOrders } from "../../../../shared/utils/dateUtils";
-import { API_BASE_URL } from "../../../../lib/apiClient";
+import { API_BASE_URL, getImageUrl } from "../../../../lib/apiClient";
 
 export default function TrackOrderPage() {
   const { id } = useParams();
@@ -66,8 +66,35 @@ export default function TrackOrderPage() {
 
   useEffect(() => {
     const fetchOrderDetails = async () => {
+      let productsMap = {};
+      try {
+        const prodRes = await axios.get(`${API_BASE_URL}/products?limit=100`);
+        const prodList = prodRes.data?.data || (Array.isArray(prodRes.data) ? prodRes.data : []);
+        prodList.forEach((p) => {
+          if (p.id) productsMap[String(p.id)] = p;
+          if (p.title) productsMap[p.title.toUpperCase()] = p;
+        });
+      } catch (e) {
+        console.warn("Products sync notice:", e);
+      }
+
+      const getLatestProdImage = (prodId, prodTitle, defaultImg) => {
+        const keyId = prodId ? String(prodId) : "";
+        const keyTitle = prodTitle ? String(prodTitle).toUpperCase() : "";
+        const liveProd = productsMap[keyId] || productsMap[keyTitle];
+        if (liveProd?.image) return getImageUrl(liveProd.image);
+        if (defaultImg) return getImageUrl(defaultImg);
+        return "https://res.cloudinary.com/dwdvdags5/image/upload/v1780316665/ekart/thgozxpt6vxonsdaz8ba.webp";
+      };
+
       const token = localStorage.getItem("access_token");
-      if (!token) return;
+      if (!token) {
+        setOrderData((prev) => ({
+          ...prev,
+          image: getLatestProdImage(prev.product_id, prev.product_title, prev.image),
+        }));
+        return;
+      }
       try {
         const response = await axios.get(`${API_BASE_URL}/orders`, {
           headers: { Authorization: `Bearer ${token}` },
@@ -84,6 +111,7 @@ export default function TrackOrderPage() {
             }
             setOrderData({
               id: String(match.order_id || match.id),
+              product_id: firstProd.product_id,
               product_title: firstProd.product_title || "ONEPLUS 15R",
               variant: "12GB RAM, Standard Variant",
               quantity: firstProd.quantity || 1,
@@ -93,12 +121,16 @@ export default function TrackOrderPage() {
               payment_method: "UPI",
               courier: "Delhivery",
               tracking_id: "149856325896",
-              image: firstProd.image || "https://res.cloudinary.com/dwdvdags5/image/upload/v1780316665/ekart/thgozxpt6vxonsdaz8ba.webp",
+              image: getLatestProdImage(firstProd.product_id, firstProd.product_title, firstProd.image),
             });
           }
         }
       } catch (err) {
         console.error("Error fetching order detail:", err);
+        setOrderData((prev) => ({
+          ...prev,
+          image: getLatestProdImage(prev.product_id, prev.product_title, prev.image),
+        }));
       }
     };
 

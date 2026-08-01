@@ -6,7 +6,7 @@ import * as S from "../../styles/OrdersPage.styles";
 import OrderCard from "../../components/OrderCard";
 
 import { getLiveISTOrders, formatISTDateString } from "../../../../shared/utils/dateUtils";
-import { API_BASE_URL } from "../../../../lib/apiClient";
+import { API_BASE_URL, getImageUrl } from "../../../../lib/apiClient";
 
 export default function OrdersPage() {
   const [activeFilter, setActiveFilter] = useState("ALL ORDERS");
@@ -23,8 +23,38 @@ export default function OrdersPage() {
         try { lastPlaced = JSON.parse(lastPlacedRaw); } catch(e) {}
       }
 
+      let productsMap = {};
+      try {
+        const prodRes = await axios.get(`${API_BASE_URL}/products?limit=100`);
+        const prodList = prodRes.data?.data || (Array.isArray(prodRes.data) ? prodRes.data : []);
+        prodList.forEach((p) => {
+          if (p.id) productsMap[String(p.id)] = p;
+          if (p.title) productsMap[p.title.toUpperCase()] = p;
+        });
+      } catch (e) {
+        console.warn("Products sync notice:", e);
+      }
+
+      const getLatestProdImage = (prodId, prodTitle, defaultImg) => {
+        const keyId = prodId ? String(prodId) : "";
+        const keyTitle = prodTitle ? String(prodTitle).toUpperCase() : "";
+        const liveProd = productsMap[keyId] || productsMap[keyTitle];
+        if (liveProd?.image) return getImageUrl(liveProd.image);
+        if (defaultImg) return getImageUrl(defaultImg);
+        return "https://res.cloudinary.com/dwdvdags5/image/upload/v1780317112/ekart/cd29pm8b7nslyespb6wi.webp";
+      };
+
       if (!token) {
-        if (lastPlaced) setOrders([lastPlaced, ...getLiveISTOrders()]);
+        const defaultsWithLiveImages = getLiveISTOrders().map((def) => ({
+          ...def,
+          image: getLatestProdImage(def.product_id, def.product_title, def.image),
+        }));
+        if (lastPlaced) {
+          lastPlaced.image = getLatestProdImage(lastPlaced.product_id, lastPlaced.product_title, lastPlaced.image);
+          setOrders([lastPlaced, ...defaultsWithLiveImages]);
+        } else {
+          setOrders(defaultsWithLiveImages);
+        }
         return;
       }
 
@@ -44,6 +74,7 @@ export default function OrdersPage() {
             const orderStatus = (item.status || "PROCESSING").toUpperCase();
             return {
               id: String(item.order_id || item.id),
+              product_id: firstProduct.product_id,
               created_at: formatISTDateString(orderDateObj),
               raw_date: orderDateObj.toISOString(),
               product_title: title,
@@ -54,22 +85,43 @@ export default function OrdersPage() {
               status: orderStatus,
               delivery_date: orderStatus === "PROCESSING" ? "Processing" : formatISTDateString(deliveryDateObj),
               payment_method: "UPI",
-              image: firstProduct.image || "https://res.cloudinary.com/dwdvdags5/image/upload/v1780317112/ekart/cd29pm8b7nslyespb6wi.webp",
+              image: getLatestProdImage(firstProduct.product_id, title, firstProduct.image),
             };
           });
 
           // Merge with last placed order if not present
           let allList = [...formatted];
-          if (lastPlaced && !allList.some((o) => String(o.id) === String(lastPlaced.id))) {
-            allList.unshift(lastPlaced);
+          if (lastPlaced) {
+            lastPlaced.image = getLatestProdImage(lastPlaced.product_id, lastPlaced.product_title, lastPlaced.image);
+            if (!allList.some((o) => String(o.id) === String(lastPlaced.id))) {
+              allList.unshift(lastPlaced);
+            }
           }
           setOrders(allList);
-        } else if (lastPlaced) {
-          setOrders([lastPlaced, ...getLiveISTOrders()]);
+        } else {
+          const defaultsWithLiveImages = getLiveISTOrders().map((def) => ({
+            ...def,
+            image: getLatestProdImage(def.product_id, def.product_title, def.image),
+          }));
+          if (lastPlaced) {
+            lastPlaced.image = getLatestProdImage(lastPlaced.product_id, lastPlaced.product_title, lastPlaced.image);
+            setOrders([lastPlaced, ...defaultsWithLiveImages]);
+          } else {
+            setOrders(defaultsWithLiveImages);
+          }
         }
       } catch (err) {
         console.error("Error fetching orders:", err);
-        if (lastPlaced) setOrders([lastPlaced, ...getLiveISTOrders()]);
+        const defaultsWithLiveImages = getLiveISTOrders().map((def) => ({
+          ...def,
+          image: getLatestProdImage(def.product_id, def.product_title, def.image),
+        }));
+        if (lastPlaced) {
+          lastPlaced.image = getLatestProdImage(lastPlaced.product_id, lastPlaced.product_title, lastPlaced.image);
+          setOrders([lastPlaced, ...defaultsWithLiveImages]);
+        } else {
+          setOrders(defaultsWithLiveImages);
+        }
       } finally {
         setIsLoading(false);
       }
@@ -80,10 +132,20 @@ export default function OrdersPage() {
 
   const filters = ["ALL ORDERS", "PROCESSING", "SHIPPED", "DELIVERED", "CANCELLED"];
 
-  const filteredOrders = orders.filter((order) => {
-    if (activeFilter === "ALL ORDERS") return true;
-    return order.status?.toUpperCase() === activeFilter;
-  });
+  const filteredOrders = orders
+    .filter((order) => {
+      if (activeFilter === "ALL ORDERS") return true;
+      return order.status?.toUpperCase() === activeFilter;
+    })
+    .sort((a, b) => {
+      const dateA = a.raw_date ? new Date(a.raw_date).getTime() : (Number(a.id) || 0);
+      const dateB = b.raw_date ? new Date(b.raw_date).getTime() : (Number(b.id) || 0);
+      if (sortBy === "OLDEST") {
+        return dateA - dateB;
+      }
+      // Default: NEWEST first
+      return dateB - dateA;
+    });
 
   const handleActionClick = (order, type) => {
     if (type === "buy_again") {

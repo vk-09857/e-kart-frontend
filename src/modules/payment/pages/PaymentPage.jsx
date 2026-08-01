@@ -120,6 +120,7 @@ export default function PaymentPage() {
     const now = new Date();
     const newOrder = {
       id: orderId,
+      product_id: firstSummaryItem.product_id || firstSummaryItem.id,
       created_at: formatISTDateString(now),
       raw_date: now.toISOString(),
       product_title: firstSummaryItem.product_title || "ONEPLUS NORD 2",
