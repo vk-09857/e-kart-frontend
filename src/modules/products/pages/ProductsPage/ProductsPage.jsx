@@ -5,7 +5,6 @@ import CategoryChips from "../../components/CategoryChips";
 
 export default function ProductsPage() {
   const {
-    products,
     filteredProducts,
     isLoading,
     isError,
@@ -15,7 +14,6 @@ export default function ProductsPage() {
     hasPrevPage,
     nextPage,
     prevPage,
-    isPlaceholderData,
     searchQuery,
   } = useProducts(100);
 

@@ -6,12 +6,6 @@ const fadeInUp = keyframes`
   to { opacity: 1; transform: translateY(0); }
 `;
 
-const float = keyframes`
-  0%, 100% { transform: translate(0, 0); }
-  33% { transform: translate(15px, -10px); }
-  66% { transform: translate(-10px, 8px); }
-`;
-
 export const PageWrapper = styled.div`
   min-height: 100vh;
   background-color: #0a0a0f;

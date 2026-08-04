@@ -15,7 +15,6 @@ import {
   ArrowRight,
   Save,
   Trash2,
-  CheckCircle2,
 } from "lucide-react";
 import { toast } from "sonner";
 import * as S from "../styles/AddressPage.styles";

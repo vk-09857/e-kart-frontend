@@ -12,7 +12,6 @@ export default function OrdersPage() {
   const [activeFilter, setActiveFilter] = useState("ALL ORDERS");
   const [sortBy, setSortBy] = useState("NEWEST");
   const [orders, setOrders] = useState([]);
-
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -21,7 +20,11 @@ export default function OrdersPage() {
       const lastPlacedRaw = localStorage.getItem("last_placed_order");
       let lastPlaced = null;
       if (lastPlacedRaw) {
-        try { lastPlaced = JSON.parse(lastPlacedRaw); } catch(e) {}
+        try {
+          lastPlaced = JSON.parse(lastPlacedRaw);
+        } catch {
+          lastPlaced = null;
+        }
       }
 
       let productsMap = {};
@@ -90,7 +93,6 @@ export default function OrdersPage() {
             };
           });
 
-          // Merge with last placed order if not present
           let allList = [...formatted];
           if (lastPlaced) {
             lastPlaced.image = getLatestProdImage(lastPlaced.product_id, lastPlaced.product_title, lastPlaced.image);
@@ -106,7 +108,6 @@ export default function OrdersPage() {
         console.error("Error fetching orders:", err);
         setOrders([]);
       } finally {
-
         setIsLoading(false);
       }
     };
@@ -127,7 +128,6 @@ export default function OrdersPage() {
       if (sortBy === "OLDEST") {
         return dateA - dateB;
       }
-      // Default: NEWEST first
       return dateB - dateA;
     });
 
@@ -174,7 +174,9 @@ export default function OrdersPage() {
 
         {/* Order List */}
         <S.OrderList>
-          {filteredOrders.length === 0 ? (
+          {isLoading ? (
+            <S.EmptyOrdersCard>Loading your order history...</S.EmptyOrdersCard>
+          ) : filteredOrders.length === 0 ? (
             <S.EmptyOrdersCard>
               No orders found for status "{activeFilter}".
             </S.EmptyOrdersCard>

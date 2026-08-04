@@ -1,4 +1,3 @@
-import React from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronRight, RotateCcw, Truck, XCircle } from "lucide-react";
 import StatusBadge from "./StatusBadge";

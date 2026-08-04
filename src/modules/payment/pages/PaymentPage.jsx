@@ -1,14 +1,12 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  ShieldCheck,
   CreditCard,
   Truck,
   MapPin,
   Phone,
   Building,
   Mail,
-  User,
   ArrowRight,
   Lock,
 } from "lucide-react";
@@ -20,72 +18,96 @@ import { useCartQuery } from "../../cart/hooks/api/useCartQuery";
 import { CART_QUERY_KEY } from "../../cart/hooks/api/useCartQuery";
 import { API_BASE_URL } from "../../../lib/apiClient";
 
+const DEFAULT_ADDRESS = {
+  full_name: "Venu",
+  phone: "8438968944",
+  address_line: "jfdkjgdbkjd",
+  city: "puttur",
+  state: "andhrapradesh",
+  pincode: "517583",
+};
+
+const formatISTDateString = (date) => {
+  return date.toLocaleString("en-IN", { timeZone: "Asia/Kolkata" });
+};
+
+const formatPrice = (val) => {
+  return `₹${Number(val).toLocaleString("en-IN")}`;
+};
+
+const savePlacedOrderToLocalStorage = (checkoutRes, summaryItems, subtotal, selectedMethod) => {
+  const firstSummaryItem = summaryItems[0] || {};
+  const fallbackId = String(Date.now()).slice(-4);
+  const orderId = String(checkoutRes?.data?.order_id || fallbackId);
+  const now = new Date();
+  const newOrder = {
+    id: orderId,
+    product_id: firstSummaryItem.product_id || firstSummaryItem.id,
+    created_at: formatISTDateString(now),
+    raw_date: now.toISOString(),
+    product_title: firstSummaryItem.product_title || "ONEPLUS NORD 2",
+    variant: "12GB RAM, Standard Variant",
+    quantity: firstSummaryItem.quantity || 1,
+    price: firstSummaryItem.price || subtotal || 29999,
+    total_price: subtotal || 29999,
+    status: "PROCESSING",
+    delivery_date: "Processing",
+    payment_method: selectedMethod === "cod" ? "COD" : "UPI",
+    image: firstSummaryItem.image || "https://res.cloudinary.com/dwdvdags5/image/upload/v1780317112/ekart/cd29pm8b7nslyespb6wi.webp",
+  };
+  localStorage.setItem("last_placed_order", JSON.stringify(newOrder));
+};
+
 export default function PaymentPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [selectedMethod, setSelectedMethod] = useState("online");
   const [isProcessing, setIsProcessing] = useState(false);
-  const [address, setAddress] = useState(null);
 
-  const { data: cartItems = [] } = useCartQuery();
-
-  // Load selected address safely on mount
-  useEffect(() => {
+  const [address, setAddress] = useState(() => {
     const saved = localStorage.getItem("selected_address");
     if (saved) {
       try {
-        setAddress(JSON.parse(saved));
-        return;
+        return JSON.parse(saved);
       } catch (e) {
         console.error("Failed to parse selected address", e);
       }
     }
+    return null;
+  });
 
-    // Fallback if no saved address in localStorage
+  const { data: cartItems = [] } = useCartQuery();
+
+  // Load address from backend asynchronously if not cached in localStorage
+  useEffect(() => {
+    if (address) return;
+
     const token = localStorage.getItem("access_token");
-    if (token) {
-      axios
-        .get(`${API_BASE_URL}/address`, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        .then((res) => {
-          const list = Array.isArray(res.data) ? res.data : res.data ? [res.data] : [];
-          if (list.length > 0) {
-            setAddress(list[0]);
-            localStorage.setItem("selected_address", JSON.stringify(list[0]));
-          } else {
-            // Default placeholder address to prevent redirect loops
-            setAddress({
-              full_name: "Venu",
-              phone: "8438968944",
-              address_line: "jfdkjgdbkjd",
-              city: "puttur",
-              state: "andhrapradesh",
-              pincode: "517583",
-            });
-          }
-        })
-        .catch(() => {
-          setAddress({
-            full_name: "Venu",
-            phone: "8438968944",
-            address_line: "jfdkjgdbkjd",
-            city: "puttur",
-            state: "andhrapradesh",
-            pincode: "517583",
-          });
-        });
-    } else {
-      setAddress({
-        full_name: "Venu",
-        phone: "8438968944",
-        address_line: "jfdkjgdbkjd",
-        city: "puttur",
-        state: "andhrapradesh",
-        pincode: "517583",
+    if (!token) return;
+
+    let isMounted = true;
+    axios
+      .get(`${API_BASE_URL}/address`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => {
+        if (!isMounted) return;
+        const list = Array.isArray(res.data) ? res.data : res.data ? [res.data] : [];
+        if (list.length > 0) {
+          setAddress(list[0]);
+          localStorage.setItem("selected_address", JSON.stringify(list[0]));
+        }
+      })
+      .catch((err) => {
+        console.warn("Failed to fetch user addresses:", err);
       });
-    }
-  }, []);
+
+    return () => {
+      isMounted = false;
+    };
+  }, [address]);
+
+  const displayAddress = address || DEFAULT_ADDRESS;
 
   const summaryItems =
     cartItems.length > 0
@@ -105,36 +127,6 @@ export default function PaymentPage() {
     (acc, item) => acc + (Number(item.price) || 0) * (Number(item.quantity) || 1),
     0
   );
-
-  const formatISTDateString = (date) => {
-    return date.toLocaleString("en-IN", { timeZone: "Asia/Kolkata" });
-  };
-
-  const formatPrice = (val) => {
-    return `₹${Number(val).toLocaleString("en-IN")}`;
-  };
-
-  const savePlacedOrderToLocalStorage = (checkoutRes) => {
-    const firstSummaryItem = summaryItems[0] || {};
-    const orderId = String(checkoutRes?.data?.order_id || Math.floor(100 + Math.random() * 900));
-    const now = new Date();
-    const newOrder = {
-      id: orderId,
-      product_id: firstSummaryItem.product_id || firstSummaryItem.id,
-      created_at: formatISTDateString(now),
-      raw_date: now.toISOString(),
-      product_title: firstSummaryItem.product_title || "ONEPLUS NORD 2",
-      variant: "12GB RAM, Standard Variant",
-      quantity: firstSummaryItem.quantity || 1,
-      price: firstSummaryItem.price || subtotal || 29999,
-      total_price: subtotal || 29999,
-      status: "PROCESSING",
-      delivery_date: "Processing",
-      payment_method: selectedMethod === "cod" ? "COD" : "UPI",
-      image: firstSummaryItem.image || "https://res.cloudinary.com/dwdvdags5/image/upload/v1780317112/ekart/cd29pm8b7nslyespb6wi.webp",
-    };
-    localStorage.setItem("last_placed_order", JSON.stringify(newOrder));
-  };
 
   const clearCartStateAndCache = async () => {
     const token = localStorage.getItem("access_token");
@@ -196,7 +188,7 @@ export default function PaymentPage() {
                 { headers: { Authorization: `Bearer ${token}` } }
               );
 
-              savePlacedOrderToLocalStorage(checkoutRes);
+              savePlacedOrderToLocalStorage(checkoutRes, summaryItems, subtotal, selectedMethod);
               await clearCartStateAndCache();
               toast.success("Payment Successful! Order Placed.");
               navigate("/orders");
@@ -208,10 +200,10 @@ export default function PaymentPage() {
                   {},
                   { headers: { Authorization: `Bearer ${token}` } }
                 );
-              } catch (e) {
+              } catch {
                 // ignore if already checked out
               }
-              savePlacedOrderToLocalStorage(checkoutRes);
+              savePlacedOrderToLocalStorage(checkoutRes, summaryItems, subtotal, selectedMethod);
               await clearCartStateAndCache();
               toast.success("Payment Successful! Order Placed.");
               navigate("/orders");
@@ -240,13 +232,13 @@ export default function PaymentPage() {
           { headers: { Authorization: `Bearer ${token}` } }
         );
       }
-      savePlacedOrderToLocalStorage(checkoutRes);
+      savePlacedOrderToLocalStorage(checkoutRes, summaryItems, subtotal, selectedMethod);
       await clearCartStateAndCache();
       toast.success("Order Placed Successfully!");
       navigate("/orders");
     } catch (err) {
       console.error(err);
-      savePlacedOrderToLocalStorage(null);
+      savePlacedOrderToLocalStorage(null, summaryItems, subtotal, selectedMethod);
       await clearCartStateAndCache();
       toast.success("Order Placed Successfully!");
       navigate("/orders");
@@ -273,7 +265,7 @@ export default function PaymentPage() {
             <S.ColumnTitle>DELIVERY ADDRESS</S.ColumnTitle>
             <S.Card>
               <S.AddressHeaderRow>
-                <S.CustomerName>{address?.full_name || "Venu"}</S.CustomerName>
+                <S.CustomerName>{displayAddress.full_name}</S.CustomerName>
                 <S.ChangeAddressBtn type="button" onClick={() => navigate("/address")}>
                   CHANGE ADDRESS
                 </S.ChangeAddressBtn>
@@ -282,24 +274,24 @@ export default function PaymentPage() {
               <S.AddressDetails>
                 <S.AddressDetailRow>
                   <Phone size={16} />
-                  <span>{address?.phone || "8438968944"}</span>
+                  <span>{displayAddress.phone}</span>
                 </S.AddressDetailRow>
 
                 <S.AddressDetailRow>
                   <MapPin size={16} />
-                  <span>{address?.address_line || "jfdkjgdbkjd"}</span>
+                  <span>{displayAddress.address_line}</span>
                 </S.AddressDetailRow>
 
                 <S.AddressDetailRow>
                   <Building size={16} />
                   <span>
-                    {address?.city || "puttur"}, {address?.state || "andhrapradesh"}
+                    {displayAddress.city}, {displayAddress.state}
                   </span>
                 </S.AddressDetailRow>
 
                 <S.AddressDetailRow>
                   <Mail size={16} />
-                  <span>{address?.pincode || "517583"}</span>
+                  <span>{displayAddress.pincode}</span>
                 </S.AddressDetailRow>
               </S.AddressDetails>
             </S.Card>

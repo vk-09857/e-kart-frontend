@@ -15,7 +15,7 @@ import { toast } from "sonner";
 import axios from "axios";
 import * as S from "../../styles/TrackOrderPage.styles";
 import StatusBadge from "../../components/StatusBadge";
-import { calculateLiveTrackingTimeline, formatISTDateString, getLiveISTOrders } from "../../../../shared/utils/dateUtils";
+import { calculateLiveTrackingTimeline, getLiveISTOrders } from "../../../../shared/utils/dateUtils";
 import { API_BASE_URL, getImageUrl } from "../../../../lib/apiClient";
 
 export default function TrackOrderPage() {
@@ -151,41 +151,6 @@ export default function TrackOrderPage() {
   };
 
   const formatPrice = (val) => `₹${Number(val).toLocaleString("en-IN")}`;
-
-  // 5 Timeline Steps matching Reference Image 1
-  const steps = [
-    {
-      title: "ORDER PLACED",
-      time: "26 May 2026, 10:30 AM",
-      icon: ShoppingBag,
-      isCompleted: true,
-    },
-    {
-      title: "CONFIRMED",
-      time: "26 May 2026, 11:10 AM",
-      icon: Package,
-      isCompleted: true,
-    },
-    {
-      title: "SHIPPED",
-      time: "27 May 2026, 03:25 PM",
-      icon: Truck,
-      isCompleted: true,
-    },
-    {
-      title: "OUT FOR DELIVERY",
-      time: "29 May 2026, 09:15 AM",
-      icon: MapPin,
-      isCompleted: true,
-    },
-    {
-      title: "DELIVERED",
-      time: "29 May 2026, 02:45 PM",
-      icon: CheckCircle2,
-      isCompleted: true,
-      isDelivered: true,
-    },
-  ];
 
   return (
     <S.PageWrapper>

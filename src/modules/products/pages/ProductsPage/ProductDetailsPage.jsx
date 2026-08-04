@@ -12,7 +12,7 @@ import * as S from "../../components/ProductDetails/ProductDetails.styles";
 export default function ProductDetailsPage() {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(Boolean(id));
   const [quantity, setQuantity] = useState(1);
   const [isProcessingBuy, setIsProcessingBuy] = useState(false);
 
@@ -35,32 +35,35 @@ export default function ProductDetailsPage() {
   };
 
   useEffect(() => {
+    if (!id) return;
+    let isMounted = true;
+
     const fetchProduct = async () => {
       try {
         const response = await apiClient(`/products/${id}`);
-        setProduct(response.data);
+        if (isMounted) setProduct(response.data);
       } catch (error) {
         console.error("Failed to fetch product:", error);
-        // Fallback default product for demonstration matching reference screenshot
-        setProduct({
-          id: Number(id) || 1,
-          title: "ONEPLUS 15R",
-          description: "Experience ultra-fast performance with the flagship Snapdragon 8 Gen processor, 120Hz Fluid AMOLED Display, 50MP Sony Camera system, and 100W SuperVOOC Flash Charge.",
-          price: 59999,
-          old_price: 74999,
-          category: "Mobiles",
-          image: "https://res.cloudinary.com/dwdvdags5/image/upload/v1780316665/ekart/thgozxpt6vxonsdaz8ba.webp",
-        });
+        if (isMounted) {
+          setProduct({
+            id: Number(id) || 1,
+            title: "ONEPLUS 15R",
+            description: "Experience ultra-fast performance with the flagship Snapdragon 8 Gen processor, 120Hz Fluid AMOLED Display, 50MP Sony Camera system, and 100W SuperVOOC Flash Charge.",
+            price: 59999,
+            old_price: 74999,
+            category: "Mobiles",
+            image: "https://res.cloudinary.com/dwdvdags5/image/upload/v1780316665/ekart/thgozxpt6vxonsdaz8ba.webp",
+          });
+        }
       } finally {
-        setIsLoading(false);
+        if (isMounted) setIsLoading(false);
       }
     };
 
-    if (id) {
-      fetchProduct();
-    } else {
-      setIsLoading(false);
-    }
+    fetchProduct();
+    return () => {
+      isMounted = false;
+    };
   }, [id]);
 
   useEffect(() => {

@@ -19,7 +19,7 @@ export const useProducts = (initialLimit = 10) => {
     isPlaceholderData,
   } = useProductsQuery(page, limit);
 
-  const products = data?.data || [];
+  const products = useMemo(() => data?.data || [], [data?.data]);
 
   const meta = data?.meta || {};
 
@@ -67,10 +67,11 @@ export const useProducts = (initialLimit = 10) => {
   };
 
   return {
-    products, // <-- FIX ADDED
+    products,
     filteredProducts,
     page,
     limit,
+    setLimit,
     searchQuery,
     isLoading,
     isError,

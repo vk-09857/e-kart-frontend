@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { getAddresses, createAddress, updateAddress, deleteAddress } from "../api/address.api";
@@ -7,7 +7,18 @@ export const ADDRESS_QUERY_KEY = ["addresses"];
 
 export const useAddress = () => {
   const queryClient = useQueryClient();
-  const [selectedAddressId, setSelectedAddressId] = useState(null);
+  const [selectedAddressId, setSelectedAddressId] = useState(() => {
+    const savedStored = localStorage.getItem("selected_address");
+    if (savedStored) {
+      try {
+        const parsed = JSON.parse(savedStored);
+        return parsed?.id || null;
+      } catch {
+        return null;
+      }
+    }
+    return null;
+  });
   const [editingAddressId, setEditingAddressId] = useState(null);
 
   const [formData, setFormData] = useState({
@@ -30,29 +41,6 @@ export const useAddress = () => {
     queryFn: getAddresses,
     staleTime: 1000 * 60 * 5,
   });
-
-  // Auto select default / first address
-  useEffect(() => {
-    if (addresses.length > 0) {
-      const savedStored = localStorage.getItem("selected_address");
-      if (savedStored) {
-        try {
-          const parsed = JSON.parse(savedStored);
-          const found = addresses.find((a) => a.id === parsed.id);
-          if (found) {
-            setSelectedAddressId(found.id);
-            return;
-          }
-        } catch (e) {
-          // ignore error
-        }
-      }
-      if (!selectedAddressId) {
-        setSelectedAddressId(addresses[0].id);
-        localStorage.setItem("selected_address", JSON.stringify(addresses[0]));
-      }
-    }
-  }, [addresses]);
 
   const selectAddress = (address) => {
     setSelectedAddressId(address.id);

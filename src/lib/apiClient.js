@@ -13,8 +13,6 @@ export const getImageUrl = (imagePath) => {
   return `${API_BASE_URL}${cleanPath}`;
 };
 
-console.log("BASE_URL:", API_BASE_URL);
-
 export const apiClient = async (
   endpoint,
   options = {}
@@ -27,7 +25,6 @@ export const apiClient = async (
 
   const token =
     localStorage.getItem("access_token");
-  console.log("TOKEN:", token);
 
   const defaultHeaders = {
     "Content-Type": "application/json",
@@ -38,7 +35,6 @@ export const apiClient = async (
       "Authorization"
     ] = `Bearer ${token}`;
   }
-  console.log("HEADERS:", defaultHeaders);
 
   const config = {
     ...options,
@@ -69,7 +65,7 @@ export const apiClient = async (
 
     try {
       result = await response.json();
-    } catch (e) {
+    } catch {
       if (!response.ok) {
         const error = new Error(
           response.statusText ||

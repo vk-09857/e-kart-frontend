@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { Menu, X, Heart, ShoppingCart } from "lucide-react";
 import SearchBar from "../../../modules/products/components/SearchBar";
@@ -11,7 +11,7 @@ import * as S from "./Header.styles";
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
-  const location = useLocation(); // Force re-render on route change to check token
+  const location = useLocation();
   const queryClient = useQueryClient();
   const toggleDrawer = useCartStore((state) => state.toggleDrawer);
   const { data: cartItems = [] } = useCartQuery();
@@ -26,7 +26,7 @@ export default function Header() {
   const handleLogout = (e) => {
     e.preventDefault();
     localStorage.removeItem("access_token");
-    queryClient.clear(); // Clear all cached user data (orders, cart, etc.)
+    queryClient.clear();
     closeMenu();
     navigate("/login");
   };
@@ -114,4 +114,3 @@ export default function Header() {
     </S.HeaderContainer>
   );
 }
-
