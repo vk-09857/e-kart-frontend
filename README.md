@@ -8,6 +8,30 @@ Frontend: https://e-kart-frontend.pages.dev
 
 ---
 
+## Screenshots
+
+1. **Sign In Page**
+   <br />
+   <img src="docs/screenshots/01-signin.png" alt="Sign In Page" width="480" />
+
+2. **Products Catalog Page**
+   <br />
+   <img src="docs/screenshots/02-products.png" alt="Products Catalog Page" width="480" />
+
+3. **Wishlist Page**
+   <br />
+   <img src="docs/screenshots/03-wishlist.png" alt="Wishlist Page" width="480" />
+
+4. **Delivery Address Page**
+   <br />
+   <img src="docs/screenshots/04-address.png" alt="Delivery Address Page" width="480" />
+
+5. **Payment Method Page**
+   <br />
+   <img src="docs/screenshots/05-payment.png" alt="Payment Method Page" width="480" />
+
+---
+
 ## Features
 
 ### Authentication
