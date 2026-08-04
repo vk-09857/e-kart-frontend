@@ -1,10 +1,10 @@
 # E-Kart Frontend
 
-A modern React-based frontend for the E-Kart e-commerce platform, providing a responsive and user-friendly shopping experience.
+A modern React-based frontend for the E-Kart e-commerce platform, providing a responsive and user-friendly shopping experience with real-time order tracking and secure payment integration.
 
 ## Live Demo
 
-Frontend: https://e-kart-one.vercel.app
+Frontend: https://e-kart-frontend.pages.dev
 
 ---
 
@@ -12,68 +12,66 @@ Frontend: https://e-kart-one.vercel.app
 
 ### Authentication
 
-* User Registration
-* User Login
+* User Registration & Login
+* Forgot Password & Reset Password Workflow
 * Protected Routes
-* JWT Authentication Support
+* JWT Authentication with Auto-Token Refresh
 
-### Products
+### Products & Catalog
 
-* Product Listing
-* Product Details Page
-* Category Filtering
-* Product Search
-* Responsive Product Cards
-
-### Categories
-
-* Mobiles
-* Laptops
-* Accessories
-* Appliances
+* Product Listing & Product Details Page
+* Category Filtering & Search Functionality
+* Price Sorting & Filters
+* Pagination & Loading Skeletons
 
 ### Shopping Cart
 
-* Add to Cart
-* Remove from Cart
-* Quantity Management
-* Cart Total Calculation
+* Slide-Over Global Cart Drawer
+* Zustand Global State Management
+* Add / Remove Cart Items
+* Quantity Management & Dynamic Total Calculation
+
+### Wishlist
+
+* Save Favorite Products
+* Interactive Confirmation Modal for Removals
+* Quick Transfer to Cart
 
 ### Address Management
 
-* Add Address
-* Select Delivery Address
-* Manage Saved Addresses
+* Saved Address List
+* Add & Manage Delivery Addresses
+* Checkout Address Selection
 
-### Orders
+### Orders & Tracking
 
-* Order Placement
+* Order Placement (Razorpay Online & Cash on Delivery)
 * Order History
+* Interactive Order Tracking Timeline
 
-### UI Features
+### UI & UX Features
 
-* Responsive Design
-* Loading Skeletons
-* Category Chips
-* Search Functionality
-* Pagination
-* Modern User Interface
-
-### Image Management
-
-* Cloudinary Image Integration
-* Optimized Product Images
+* Responsive Mobile-First Design
+* Toast Notifications
+* Modern Iconography
+* Cloudinary Image CDN Integration
 
 ---
 
 ## Tech Stack
 
-* React.js
+* React 19
+* Vite
 * React Router DOM
+* TanStack React Query
+* Zustand
 * Axios
-* React Query
-* Styled Components
-* Bootstrap
+* Styled Components & Emotion
+* Bootstrap 5
+* React Hook Form & Zod
+* Lucide React
+* Sonner
+* Razorpay Web SDK
 
 ---
 
@@ -91,14 +89,32 @@ npm run dev
 
 ---
 
+## Environment Variables
+
+Create a `.env` file in the frontend root directory:
+
+```env
+VITE_API_URL=https://e-kart-backend-qyf8.onrender.com
+VITE_RAZORPAY_KEY_ID=your_razorpay_key_id
+```
+
+---
+
 ## Folder Structure
 
 ```text
 src/
 ├── app/
+│   ├── pages/
+│   ├── App.jsx
+│   ├── AppRouter.jsx
+│   ├── GlobalStyles.styles.js
+│   └── Providers.jsx
 ├── assets/
 ├── constants/
 ├── lib/
+│   ├── apiClient.js
+│   └── reactQuery.js
 ├── modules/
 │   ├── address/
 │   ├── auth/
@@ -106,7 +122,20 @@ src/
 │   ├── orders/
 │   ├── payment/
 │   ├── products/
-│   └── reviews/
+│   └── wishlist/
 ├── shared/
+│   ├── components/
+│   ├── hooks/
+│   ├── styles/
+│   └── utils/
 └── main.jsx
 ```
+
+---
+
+## Project Architecture
+
+The project follows a domain-driven modular architecture:
+* **Modules (`src/modules/`)**: Features organized by domain (auth, products, cart, wishlist, orders, address, payment).
+* **Shared (`src/shared/`)**: Global UI components (Header, Footer, CartDrawer, Modal, Loader) and utilities.
+* **API & State Management (`src/lib/`)**: Custom Axios client with interceptors, TanStack React Query for server state, and Zustand for cart state.
