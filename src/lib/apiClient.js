@@ -36,10 +36,21 @@ export const apiClient = async (
     ] = `Bearer ${token}`;
   }
 
+  const method = (options.method || "GET").toUpperCase();
+  const idempotencyHeader = {};
+
+  if (["POST", "PUT", "DELETE"].includes(method) && !options.headers?.["Idempotency-Key"]) {
+    idempotencyHeader["Idempotency-Key"] =
+      typeof crypto !== "undefined" && crypto.randomUUID
+        ? crypto.randomUUID()
+        : `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+  }
+
   const config = {
     ...options,
     headers: {
       ...defaultHeaders,
+      ...idempotencyHeader,
       ...options.headers,
     },
   };

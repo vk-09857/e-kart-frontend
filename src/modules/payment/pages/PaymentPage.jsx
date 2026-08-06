@@ -149,99 +149,129 @@ export default function PaymentPage() {
     setIsProcessing(true);
 
     const token = localStorage.getItem("access_token");
+    if (!token) {
+      toast.error("Please log in to complete your order.");
+      setIsProcessing(false);
+      return;
+    }
 
-    // If online razorpay payment
-    if (selectedMethod === "online" && window.Razorpay && import.meta.env.VITE_RAZORPAY_KEY_ID) {
+    const idempotencyKey = `checkout_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+
+    // Online Razorpay Payment
+    if (selectedMethod === "online") {
+      if (!window.Razorpay) {
+        toast.error("Razorpay SDK failed to load. Please check your internet connection.");
+        setIsProcessing(false);
+        return;
+      }
+
       try {
         const response = await axios.post(
           `${API_BASE_URL}/create-payment-order`,
           { amount: subtotal },
-          { headers: { Authorization: `Bearer ${token}` } }
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Idempotency-Key": idempotencyKey,
+            },
+          }
         );
 
-        const order = response.data;
+        const orderData = response.data;
+        const razorpayOrderId = orderData.razorpay_order_id || orderData.id;
+        const razorpayKeyId = orderData.key_id || import.meta.env.VITE_RAZORPAY_KEY_ID;
+
         const options = {
-          key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-          amount: order.amount,
-          currency: order.currency || "INR",
+          key: razorpayKeyId,
+          amount: orderData.amount,
+          currency: orderData.currency || "INR",
           name: "EKARTHUB",
           description: "Order Payment",
-          order_id: order.id,
+          order_id: razorpayOrderId,
           handler: async function (paymentResponse) {
-            let checkoutRes = null;
             try {
-              try {
-                await axios.post(`${API_BASE_URL}/verify-payment`, null, {
-                  params: {
-                    razorpay_order_id: paymentResponse.razorpay_order_id,
-                    razorpay_payment_id: paymentResponse.razorpay_payment_id,
-                    razorpay_signature: paymentResponse.razorpay_signature,
+              const verifyRes = await axios.post(
+                `${API_BASE_URL}/verify-payment`,
+                {
+                  razorpay_order_id: paymentResponse.razorpay_order_id,
+                  razorpay_payment_id: paymentResponse.razorpay_payment_id,
+                  razorpay_signature: paymentResponse.razorpay_signature,
+                },
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Idempotency-Key": `verify_${paymentResponse.razorpay_order_id}`,
                   },
-                });
-              } catch (vErr) {
-                console.warn("Verification warning:", vErr);
-              }
-
-              checkoutRes = await axios.post(
-                `${API_BASE_URL}/checkout`,
-                {},
-                { headers: { Authorization: `Bearer ${token}` } }
+                }
               );
 
-              savePlacedOrderToLocalStorage(checkoutRes, summaryItems, subtotal, selectedMethod);
+              savePlacedOrderToLocalStorage(verifyRes, summaryItems, subtotal, "online");
               await clearCartStateAndCache();
               toast.success("Payment Successful! Order Placed.");
               navigate("/orders");
-            } catch (err) {
-              console.error("Payment handler fallback checkout:", err);
-              try {
-                checkoutRes = await axios.post(
-                  `${API_BASE_URL}/checkout`,
-                  {},
-                  { headers: { Authorization: `Bearer ${token}` } }
-                );
-              } catch {
-                // ignore if already checked out
-              }
-              savePlacedOrderToLocalStorage(checkoutRes, summaryItems, subtotal, selectedMethod);
-              await clearCartStateAndCache();
-              toast.success("Payment Successful! Order Placed.");
-              navigate("/orders");
+            } catch (vErr) {
+              console.error("[Razorpay Verification Error]:", vErr);
+              const errorMessage =
+                vErr.response?.data?.detail?.message ||
+                vErr.response?.data?.message ||
+                "Payment verification failed. Order was not placed.";
+              toast.error(errorMessage);
             } finally {
               setIsProcessing(false);
             }
+          },
+          modal: {
+            ondismiss: function () {
+              setIsProcessing(false);
+              toast.error("Payment cancelled. Order was not created.");
+            },
           },
           theme: { color: "#FF1F1F" },
         };
 
         const razor = new window.Razorpay(options);
+        razor.on("payment.failed", function (response) {
+          console.error("[Razorpay Payment Failed]:", response.error);
+          setIsProcessing(false);
+          toast.error(response.error?.description || "Payment failed. Order was not created.");
+        });
         razor.open();
         return;
       } catch (err) {
-        console.warn("Razorpay initialization skipped, placing order via checkout fallback...", err);
+        console.error("[Razorpay Initialization Error]:", err);
+        const errMsg =
+          err.response?.data?.detail?.message ||
+          err.response?.data?.message ||
+          "Failed to initialize Razorpay payment. Please try again.";
+        toast.error(errMsg);
+        setIsProcessing(false);
+        return;
       }
     }
 
-    // Direct Checkout Fallback (Cash on Delivery or direct backend order placement)
+    // Cash on Delivery (COD) Flow
     try {
-      let checkoutRes = null;
-      if (token) {
-        checkoutRes = await axios.post(
-          `${API_BASE_URL}/checkout`,
-          {},
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-      }
-      savePlacedOrderToLocalStorage(checkoutRes, summaryItems, subtotal, selectedMethod);
+      const checkoutRes = await axios.post(
+        `${API_BASE_URL}/checkout`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Idempotency-Key": idempotencyKey,
+          },
+        }
+      );
+      savePlacedOrderToLocalStorage(checkoutRes, summaryItems, subtotal, "cod");
       await clearCartStateAndCache();
       toast.success("Order Placed Successfully!");
       navigate("/orders");
     } catch (err) {
-      console.error(err);
-      savePlacedOrderToLocalStorage(null, summaryItems, subtotal, selectedMethod);
-      await clearCartStateAndCache();
-      toast.success("Order Placed Successfully!");
-      navigate("/orders");
+      console.error("[COD Checkout Error]:", err);
+      const errMsg =
+        err.response?.data?.detail?.message ||
+        err.response?.data?.message ||
+        "Failed to place order. Please try again.";
+      toast.error(errMsg);
     } finally {
       setIsProcessing(false);
     }
