@@ -80,6 +80,12 @@ Frontend: https://e-kart-frontend.pages.dev
 * Modern Iconography
 * Cloudinary Image CDN Integration
 
+### Request Idempotency
+
+* Centralized API client (`apiClient.js`) automatically generating unique UUID `Idempotency-Key` headers for mutating HTTP requests (`POST`, `PUT`, `DELETE`)
+* Custom checkout idempotency key generation (`checkout_<timestamp>_<random>`) to prevent accidental duplicate order placements during network retries or double clicks
+* Deterministic payment verification keys (`verify_<razorpay_order_id>`) ensuring order verification and finalization operations are strictly idempotent
+
 ---
 
 ## Tech Stack
@@ -134,8 +140,6 @@ src/
 │   ├── AppRouter.jsx
 │   ├── GlobalStyles.styles.js
 │   └── Providers.jsx
-├── assets/
-├── constants/
 ├── lib/
 │   ├── apiClient.js
 │   └── reactQuery.js
@@ -149,8 +153,6 @@ src/
 │   └── wishlist/
 ├── shared/
 │   ├── components/
-│   ├── hooks/
-│   ├── styles/
 │   └── utils/
 └── main.jsx
 ```
@@ -162,4 +164,5 @@ src/
 The project follows a domain-driven modular architecture:
 * **Modules (`src/modules/`)**: Features organized by domain (auth, products, cart, wishlist, orders, address, payment).
 * **Shared (`src/shared/`)**: Global UI components (Header, Footer, CartDrawer, Modal, Loader) and utilities.
-* **API & State Management (`src/lib/`)**: Custom Axios client with interceptors, TanStack React Query for server state, and Zustand for cart state.
+* **API & State Management (`src/lib/`)**: Custom Fetch API client (`apiClient.js`) with automatic idempotency header injection, TanStack React Query for server state, and Zustand for cart state.
+* **Idempotency Protection Layer**: Handles double-click protection and key generation for checkout and Razorpay payment operations.
